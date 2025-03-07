@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Delete Review - {{ object.book_title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Delete Review</h2>
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">Are you sure?</h4>
+                    <p>You are about to delete your review of "{{ object.book_title }}" by {{ object.book_author }}.</p>
+                    <hr>
+                    <p class="mb-0">This action cannot be undone.</p>
+                </div>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete Review
+                        </button>
+                        <a href="{% url 'post-detail' object.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,72 @@
+[
+    {
+        "model": "blog.genre",
+        "pk": 1,
+        "fields": {
+            "name": "Fiction"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 2,
+        "fields": {
+            "name": "Non-Fiction"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 3,
+        "fields": {
+            "name": "Mystery"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 4,
+        "fields": {
+            "name": "Science Fiction"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 5,
+        "fields": {
+            "name": "Fantasy"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 6,
+        "fields": {
+            "name": "Romance"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 7,
+        "fields": {
+            "name": "Biography"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 8,
+        "fields": {
+            "name": "History"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 9,
+        "fields": {
+            "name": "Self-Help"
+        }
+    },
+    {
+        "model": "blog.genre",
+        "pk": 10,
+        "fields": {
+            "name": "Poetry"
+        }
+    }
+] 

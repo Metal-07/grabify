@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}{{ post.book_title }} - Review{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <article class="card mb-4">
+            <div class="card-body">
+                {% if user == post.author %}
+                    <div class="float-end">
+                        <a href="{% url 'post-update' post.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit"></i> Edit Review
+                        </a>
+                        <a href="{% url 'post-delete' post.pk %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                {% endif %}
+
+                <h1 class="card-title mb-3">{{ post.title }}</h1>
+                
+                <div class="row mb-4">
+                    {% if post.book_cover %}
+                        <div class="col-md-3">
+                            <img src="{{ post.book_cover.url }}" class="img-fluid rounded shadow-sm" alt="{{ post.book_title }}">
+                        </div>
+                    {% endif %}
+                    <div class="{% if post.book_cover %}col-md-9{% else %}col-12{% endif %}">
+                        <h3 class="text-muted">{{ post.book_title }}</h3>
+                        <h4 class="text-muted">by {{ post.book_author }}</h4>
+                        
+                        <div class="my-3">
+                            <span class="badge bg-primary">{{ post.get_reading_status_display }}</span>
+                            {% if post.recommended %}
+                                <span class="badge bg-success">Recommended</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="h4 text-warning">
+                                {% for i in ""|ljust:post.rating %}★{% endfor %}
+                            </span>
+                            <span class="text-muted">({{ post.rating }} out of 5)</span>
+                        </div>
+
+                        <div class="mb-3">
+                            {% for genre in post.genre.all %}
+                                <a href="{% url 'home' %}?genre={{ genre.name }}" class="badge bg-secondary text-decoration-none">
+                                    {{ genre.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+
+                        <p class="text-muted">
+                            <small>
+                                Reviewed by {{ post.author }} on {{ post.date_posted|date:"F d, Y" }}
+                            </small>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="review-content">
+                    {{ post.content|linebreaks }}
+                </div>
+
+                <hr>
+
+                <div class="mt-4">
+                    <h4>Share this Review</h4>
+                    <div class="d-flex gap-2">
+                        <a href="https://twitter.com/intent/tweet?text={{ post.title|urlencode }}%20{{ request.build_absolute_uri }}" 
+                           target="_blank" class="btn btn-outline-primary">
+                            <i class="fab fa-twitter"></i> Tweet
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" 
+                           target="_blank" class="btn btn-outline-primary">
+                            <i class="fab fa-facebook"></i> Share
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        {% if related_posts %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Related Reviews</h4>
+                    <div class="row">
+                        {% for related in related_posts %}
+                            <div class="col-md-4">
+                                <div class="card h-100 hover-shadow">
+                                    {% if related.book_cover %}
+                                        <img src="{{ related.book_cover.url }}" class="card-img-top" alt="{{ related.book_title }}">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="{% url 'post-detail' related.pk %}" class="text-decoration-none">
+                                                {{ related.book_title }}
+                                            </a>
+                                        </h5>
+                                        <p class="card-text small">by {{ related.book_author }}</p>
+                                        <div class="text-warning small">
+                                            {% for i in ""|ljust:related.rating %}★{% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Reviews
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .review-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+    .hover-shadow {
+        transition: box-shadow 0.3s ease;
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %} 

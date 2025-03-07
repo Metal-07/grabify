@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}Book Reviews{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Search and Filter Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="GET" class="mb-0">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" name="q" class="form-control" placeholder="Search reviews..." value="{{ search_query }}">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="genre" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Genres</option>
+                                {% for genre in genres %}
+                                    <option value="{{ genre.name }}" {% if genre.name == current_genre %}selected{% endif %}>
+                                        {{ genre.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                <option value="currently_reading" {% if current_status == 'currently_reading' %}selected{% endif %}>Currently Reading</option>
+                                <option value="finished" {% if current_status == 'finished' %}selected{% endif %}>Finished</option>
+                                <option value="want_to_read" {% if current_status == 'want_to_read' %}selected{% endif %}>Want to Read</option>
+                                <option value="dnf" {% if current_status == 'dnf' %}selected{% endif %}>DNF</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if search_query or current_genre or current_status %}
+            <div class="mb-4">
+                <h5>
+                    {% if search_query %}
+                        Search results for "{{ search_query }}"
+                    {% endif %}
+                    {% if current_genre %}
+                        {% if search_query %} in {% endif %}
+                        Genre: {{ current_genre }}
+                    {% endif %}
+                    {% if current_status %}
+                        {% if search_query or current_genre %} with {% endif %}
+                        Status: {{ current_status|title }}
+                    {% endif %}
+                </h5>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-times"></i> Clear Filters
+                </a>
+            </div>
+        {% endif %}
+
+        {% for post in posts %}
+            <article class="card mb-4 hover-shadow">
+                <div class="card-body">
+                    <div class="row">
+                        {% if post.book_cover %}
+                            <div class="col-md-3">
+                                <img src="{{ post.book_cover.url }}" class="img-fluid rounded shadow-sm" alt="{{ post.book_title }}">
+                            </div>
+                        {% endif %}
+                        <div class="{% if post.book_cover %}col-md-9{% else %}col-12{% endif %}">
+                            <h2 class="card-title">
+                                <a href="{% url 'post-detail' post.pk %}" class="text-decoration-none">{{ post.title }}</a>
+                            </h2>
+                            <h4 class="text-muted">{{ post.book_title }} by {{ post.book_author }}</h4>
+                            
+                            <div class="mb-2">
+                                <span class="badge bg-primary">{{ post.get_reading_status_display }}</span>
+                                {% if post.recommended %}
+                                    <span class="badge bg-success">Recommended</span>
+                                {% endif %}
+                                <span class="text-warning">
+                                    {% for i in ""|ljust:post.rating %}★{% endfor %}
+                                </span>
+                            </div>
+
+                            <p class="text-muted small">
+                                Reviewed by {{ post.author }} on {{ post.date_posted|date:"F d, Y" }}
+                            </p>
+
+                            <p class="card-text">{{ post.content|truncatewords:50 }}</p>
+                            
+                            <div class="mt-2">
+                                {% for genre in post.genre.all %}
+                                    <a href="?genre={{ genre.name }}" class="badge bg-secondary text-decoration-none">
+                                        {{ genre.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+
+                            <a href="{% url 'post-detail' post.pk %}" class="btn btn-primary mt-3">Read Full Review</a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="alert alert-info">
+                <h4 class="alert-heading">No Reviews Found!</h4>
+                {% if search_query or current_genre or current_status %}
+                    <p>No reviews match your search criteria. Try adjusting your filters or search terms.</p>
+                {% else %}
+                    <p>Start sharing your reading journey by adding your first book review.</p>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'post-create' %}" class="btn btn-primary">Write a Review</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">Login to Write Reviews</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        {% if is_paginated %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if current_genre %}&genre={{ current_genre }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">First</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_genre %}&genre={{ current_genre }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_genre %}&genre={{ current_genre }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_genre %}&genre={{ current_genre }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">Next</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_genre %}&genre={{ current_genre }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">Last</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        {% if not user.is_authenticated %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Join Our Reading Community</h5>
+                <p class="card-text">Share your reading journey, write reviews, and connect with other book lovers.</p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'register' %}" class="btn btn-success">
+                        <i class="fas fa-user-plus"></i> Create Account
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">About Grabify</h5>
+                <p class="card-text">Welcome to Grabify - your go-to destination for authentic book reviews! Share your reading experiences, discover new books, and connect with fellow book enthusiasts.</p>
+                {% if user.is_authenticated %}
+                    <div class="d-grid">
+                        <a href="{% url 'post-create' %}" class="btn btn-success">
+                            <i class="fas fa-pen"></i> Write a Review
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle"></i> 
+                        <a href="{% url 'login' %}" class="alert-link">Login</a> or 
+                        <a href="{% url 'register' %}" class="alert-link">Register</a> 
+                        to write reviews
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Reading Status Guide</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="?status=currently_reading" class="text-decoration-none">
+                            <span class="badge bg-primary">Currently Reading</span>
+                            - Books I'm reading now
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="?status=finished" class="text-decoration-none">
+                            <span class="badge bg-success">Finished</span>
+                            - Completed books
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="?status=want_to_read" class="text-decoration-none">
+                            <span class="badge bg-info">Want to Read</span>
+                            - On my reading list
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="?status=dnf" class="text-decoration-none">
+                            <span class="badge bg-secondary">DNF</span>
+                            - Did not finish
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {% if genres %}
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Browse by Genre</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for genre in genres %}
+                        <a href="?genre={{ genre.name }}" class="badge bg-secondary text-decoration-none">
+                            {{ genre.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .badge {
+        font-size: 0.9rem;
+    }
+    .card-title a {
+        color: #2c3e50;
+    }
+    .card-title a:hover {
+        color: #3498db;
+    }
+    .hover-shadow {
+        transition: box-shadow 0.3s ease;
+    }
+    .hover-shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .alert-link {
+        text-decoration: none;
+    }
+    .alert-link:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %} 

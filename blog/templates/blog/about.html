@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}About Mohammed Kamal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title mb-4">About Mohammed Kamal</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="text-primary mb-3">Welcome to My Blog</h3>
+                        <p class="lead">
+                            Hello! I'm Mohammed Kamal, the creator and maintainer of this blog platform.
+                        </p>
+                        
+                        <h4 class="mt-4 mb-3">About Me</h4>
+                        <p>
+                            I'm passionate about sharing knowledge and experiences through writing. 
+                            This blog serves as a platform where I and other contributors can share 
+                            interesting stories, insights, and valuable information.
+                        </p>
+
+                        <h4 class="mt-4 mb-3">Blog Features</h4>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                User-friendly content management
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Rich text editing with image support
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Secure user authentication
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Responsive design for all devices
+                            </li>
+                        </ul>
+
+                        <h4 class="mt-4 mb-3">Get in Touch</h4>
+                        <p>
+                            Feel free to explore the blog and share your thoughts through comments. 
+                            If you'd like to contribute or have any questions, don't hesitate to 
+                            reach out through the contact options below.
+                        </p>
+
+                        <div class="mt-4">
+                            <h5 class="mb-3">Connect with me:</h5>
+                            <div class="d-flex gap-3">
+                                <a href="#" class="btn btn-outline-primary">
+                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                </a>
+                                <a href="#" class="btn btn-outline-info">
+                                    <i class="fab fa-twitter"></i> Twitter
+                                </a>
+                                <a href="#" class="btn btn-outline-dark">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    .card-title {
+        color: #2c3e50;
+        font-weight: 700;
+    }
+    .lead {
+        color: #34495e;
+    }
+    h4 {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    .list-group-item {
+        border: none;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        margin-bottom: 0.5rem;
+        border-radius: 0.5rem;
+    }
+    .btn {
+        padding: 0.5rem 1.5rem;
+    }
+</style>
+{% endblock %} 
